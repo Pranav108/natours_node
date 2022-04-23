@@ -1,8 +1,22 @@
 const Tour = require('../models/tourModel');
+const APIfeatures = require('../utils/apiFeatures');
+
+exports.aliasTopTour = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,ratingsAverage,price,summary,difficulty';
+  next();
+};
 
 exports.getAllTours = async (req, res) => {
   try {
-    const allToursData = await Tour.find();
+    const features = new APIfeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+    const allToursData = await features.query;
+
     res.status(200).json({
       status: 'success',
       result: allToursData.length,
@@ -11,7 +25,7 @@ exports.getAllTours = async (req, res) => {
   } catch (err) {
     res.status(404).json({
       status: 'failure',
-      message: 'Unable to read data from DataBase',
+      message: err.message,
     });
   }
 };
@@ -26,7 +40,7 @@ exports.getTours = async (req, res) => {
   } catch (err) {
     res.status(400).json({
       status: 'failure',
-      message: err,
+      message: err.message,
     });
   }
 };
@@ -40,7 +54,7 @@ exports.addTours = async (req, res) => {
   } catch (err) {
     res.status(404).json({
       status: 'failure',
-      message: err,
+      message: err.message,
     });
   }
 };
@@ -58,7 +72,7 @@ exports.updateTours = async (req, res) => {
   } catch (err) {
     res.status(404).json({
       status: 'failure',
-      message: err,
+      message: err.message,
     });
   }
 };
@@ -73,7 +87,7 @@ exports.deleteTours = async (req, res) => {
   } catch (err) {
     res.status(404).json({
       status: 'failure',
-      message: err,
+      message: err.message,
     });
   }
 };
