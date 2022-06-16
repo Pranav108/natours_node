@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema({
     type: 'string',
     required: [true, 'A user must have a password'],
     minlength: [8, 'Please provide a password with at least 8 characters'],
+    select: false,
   },
   passwordConfirm: {
     type: 'string',
@@ -44,6 +45,11 @@ userSchema.pre('save', async function (next) {
 
   next();
 });
+
+userSchema.methods.varifyPassword = async function (candidatePassword) {
+  // here this.password is accissible because we have selected 'password' for our current user
+  return await bcrypt.compare(candidatePassword, this.password);
+};
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;
