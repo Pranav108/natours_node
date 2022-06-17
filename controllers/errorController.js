@@ -26,6 +26,13 @@ const sendProdError = (err, res) => {
 };
 
 //ERROR HANDLER FUNCTIONS
+
+const handleExpiredTokenError = () =>
+  new AppError('Token Expired !. Please LogIn again.', 401);
+
+const handleJWTError = () =>
+  new AppError('Invalid signature, please LogIn again.', 401);
+
 const handleCastErrorDB = (err) => {
   const message = `Invalid ${err.path} : ${err.value}`;
   return new AppError(message, 400);
@@ -56,6 +63,8 @@ module.exports = (err, req, res, next) => {
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
     if (error.name === 'ValidationError')
       error = handleValidationErrorDB(error);
+    if (err.name === 'TokenExpiredError') error = handleExpiredTokenError();
+    if (error.name === 'JsonWebTokenError') error = handleJWTError();
     sendProdError(error, res);
   } else {
     res.status(err.statusCode).json({

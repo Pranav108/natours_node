@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
@@ -15,6 +16,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     photo: req.body.photo,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
+    passwordChangedAt: req.body.passwordChangedAt,
   });
 
   const token = signToken(newUser._id);
@@ -37,11 +39,53 @@ exports.login = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ email }).select('+password');
   const isCorrect = await user.varifyPassword(password);
   if (!user || !isCorrect)
-    return next(new Error('Please provide a valid credentials', 401));
+    return next(new AppError('Please provide a valid credentials', 401));
 
   // 3) if everything is ok, send toke to the client
   res.status(200).json({
     result: 'success',
     token: signToken(user._id),
   });
+});
+
+exports.protect = catchAsync(async (req, res, next) => {
+  // 1) Getting the token and checking if it is correct
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer ')
+  )
+    token = req.headers.authorization.split(' ')[1];
+  if (!token)
+    return next(
+      new AppError(
+        'You are not authorized to access this page. Please login first.'
+      )
+    );
+
+  //2)Verifying the token
+  const decodedInfo = await promisify(jwt.verify)(
+    token,
+    process.env.JWT_SECRET
+  );
+
+  //3)Check if user still exists
+  const currentUser = await User.findById(decodedInfo.id);
+  if (!currentUser)
+    return next(
+      new AppError('The user belonging to this token no longer exists.', 401)
+    );
+
+  //4)Check id user changed the password after the token was issued
+  if (currentUser.isPasswordChangedLater(decodedInfo.iat))
+    return next(
+      new AppError(
+        'Recently password for this user has been changed. Please LogIn again',
+        401
+      )
+    );
+
+  //GRANT ACCESS TO PROTECTED ROUTE
+  req.user = currentUser;
+  next();
 });
