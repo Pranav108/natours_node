@@ -101,6 +101,14 @@ const tourSchema = new mongoose.Schema(
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
+
+//Virtual populate
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
 //MIDDLEWARE for populating giudeData
 // tourSchema.pre('save', async function (next) {
 //   const guidePromises = this.guides.map(async (id) => await User.findById(id));
