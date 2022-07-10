@@ -28,7 +28,7 @@ const reviewSchema = new mongoose.Schema(
 
 //Middleware
 reviewSchema.pre(/^find/, function (next) {
-  this.populate({ path: 'user', select: 'name photo -_id' });
+  this.populate({ path: 'user', select: 'name photo' });
 
   next();
 });

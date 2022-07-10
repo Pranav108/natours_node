@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const factory = require('./handlerFactory');
 
 const filterObject = (obj, ...allowedFields) => {
   const newObj = {};
@@ -10,15 +11,10 @@ const filterObject = (obj, ...allowedFields) => {
   return newObj;
 };
 
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const user = await User.find();
-
-  res.status(200).json({
-    status: 'Success',
-    length: user.length,
-    data: user,
-  });
-});
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
 
 exports.updateMyInfo = catchAsync(async (req, res, next) => {
   //1) Create error if user POSTs password data
@@ -43,6 +39,12 @@ exports.updateMyInfo = catchAsync(async (req, res, next) => {
   });
 });
 
+//do NOT update password with this!
+exports.updateUser = factory.updateOne(User);
+exports.deleteUser = factory.deleteOne(User);
+exports.getUser = factory.getOne(User);
+exports.getAllUsers = factory.getAll(User);
+
 exports.deleteMyAccount = catchAsync(async (req, res, next) => {
   await User.findByIdAndUpdate(req.user.id, { active: false });
   res.status(204).json({
@@ -51,16 +53,9 @@ exports.deleteMyAccount = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getUsers = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This router is yet to implement',
-  });
-};
-
 exports.addUsers = (req, res) => {
   res.status(500).json({
     status: 'error',
-    message: 'This router is yet to implement',
+    message: 'This router is NOT defined. Please use /signUp insted',
   });
 };

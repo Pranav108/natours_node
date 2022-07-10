@@ -81,6 +81,7 @@ $ npm run start_prod(for production)
 - Implemented MVC(Model-View-Controller) architecture
 - Proper organized module structure.
 - Advanced error handling methods implementation.
+- Implemented handlerFactory to remove redundency in Controllers.
 
 ## API Features
 
