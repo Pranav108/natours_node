@@ -1,16 +1,12 @@
 const Tour = require('../models/tourModel');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
+// const AppError = require('../utils/appError');
 
 exports.aliasTopTour = (req, res, next) => {
   req.query.limit = '5';
   req.query.sort = '-ratingsAverage,price';
   req.query.fields = 'name,ratingsAverage,price,summary,difficulty';
-  next();
-};
-// middleware to query review for Given TourID
-exports.setTourId = (req, res, next) => {
-  if (req.params.tourId) req.query.tour = req.params.tourId;
   next();
 };
 

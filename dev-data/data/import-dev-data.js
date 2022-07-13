@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const Tour = require('../../models/tourModel');
 const User = require('../../models/userModel');
+const Review = require('../../models/reviewModel');
 
 dotenv.config({ path: path.resolve(__dirname, './../../config.env') });
 
@@ -28,20 +29,16 @@ const tours = JSON.parse(
 const users = JSON.parse(
   fs.readFileSync(path.join(__dirname, `users.json`), 'utf-8')
 );
+const reviews = JSON.parse(
+  fs.readFileSync(path.join(__dirname, `reviews.json`), 'utf-8')
+);
 
 //WRITE DATA
-const addToursData = async () => {
+const addData = async () => {
   try {
     await Tour.create(tours);
-    console.log('Tour Data successfully loaded');
-  } catch (err) {
-    console.log(err);
-  }
-  process.exit();
-};
-const addUsersData = async () => {
-  try {
-    await User.create(users);
+    await User.create(users, { validateBeforeSave: false });
+    await Review.create(reviews);
     console.log('User Data successfully loaded');
   } catch (err) {
     console.log(err);
@@ -53,6 +50,8 @@ const addUsersData = async () => {
 const deleteData = async () => {
   try {
     await User.deleteMany();
+    await Tour.deleteMany();
+    await Review.deleteMany();
     console.log('Data successfully deleted');
   } catch (err) {
     console.log(err);
@@ -60,7 +59,6 @@ const deleteData = async () => {
   process.exit();
 };
 
-if (process.argv[2] === '--importUser') addUsersData();
-else if (process.argv[2] === '--importTour') addToursData();
+if (process.argv[2] === '--import') addData();
 else if (process.argv[2] === '--delete') deleteData();
 else console.log(`Can't find what are you looking for`);

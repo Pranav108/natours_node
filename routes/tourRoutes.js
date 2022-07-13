@@ -6,7 +6,7 @@ const reviewRouter = require('./reviewRoutes');
 const router = express.Router();
 
 //if we want review then go to review Routes
-router.use('/:tourId/review', tourController.setTourId, reviewRouter);
+router.use('/:tourId/review', reviewRouter);
 
 router.route('/tour-stats').get(tourController.getTourStats);
 router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);

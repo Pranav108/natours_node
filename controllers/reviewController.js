@@ -11,6 +11,7 @@ exports.setTourUserIds = (req, res, next) => {
 
 exports.verifyAuthor = catchAsync(async (req, res, next) => {
   const review = await Review.findById(req.params.id);
+  if (!review) return next(new AppError(`This review no longer exists`, 404));
 
   if (req.user.role !== 'admin') {
     if (review.user.id !== req.user.id)
