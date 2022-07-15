@@ -1,9 +1,12 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const fs = require('fs');
+const path = require('path');
 const Tour = require('../../models/tourModel');
+const User = require('../../models/userModel');
+const Review = require('../../models/reviewModel');
 
-dotenv.config({ path: './../../config.env' });
+dotenv.config({ path: path.resolve(__dirname, './../../config.env') });
 
 const DB = process.env.DATABASE.replace(
   '<PASSWORD>',
@@ -15,17 +18,28 @@ mongoose
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false,
+    useUnifiedTopology: true,
   })
   .then(() => console.log('DB connection successful'));
 
 //READ JSON FILE
-const tours = JSON.parse(fs.readFileSync(`tours-simple.json`, 'utf-8'));
+const tours = JSON.parse(
+  fs.readFileSync(path.join(__dirname, `tours.json`), 'utf-8')
+);
+const users = JSON.parse(
+  fs.readFileSync(path.join(__dirname, `users.json`), 'utf-8')
+);
+const reviews = JSON.parse(
+  fs.readFileSync(path.join(__dirname, `reviews.json`), 'utf-8')
+);
 
 //WRITE DATA
-const addToursData = async () => {
+const addData = async () => {
   try {
     await Tour.create(tours);
-    console.log('Data successfully loaded');
+    await User.create(users, { validateBeforeSave: false });
+    await Review.create(reviews);
+    console.log('User Data successfully loaded');
   } catch (err) {
     console.log(err);
   }
@@ -35,7 +49,9 @@ const addToursData = async () => {
 //DELETE DATA
 const deleteData = async () => {
   try {
+    await User.deleteMany();
     await Tour.deleteMany();
+    await Review.deleteMany();
     console.log('Data successfully deleted');
   } catch (err) {
     console.log(err);
@@ -43,6 +59,6 @@ const deleteData = async () => {
   process.exit();
 };
 
-if (process.argv[2] === '--import') addToursData();
+if (process.argv[2] === '--import') addData();
 else if (process.argv[2] === '--delete') deleteData();
 else console.log(`Can't find what are you looking for`);

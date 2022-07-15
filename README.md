@@ -81,42 +81,11 @@ $ npm run start_prod(for production)
 - Implemented MVC(Model-View-Controller) architecture
 - Proper organized module structure.
 - Advanced error handling methods implementation.
+- Implemented handlerFactory to remove redundency in Controllers.
 
 ## API Features
 
-### POST requests
-
-Sign Up (`http://127.0.0.1:3000/api/v1/users/signup`)
-
-Log In (`http://127.0.0.1:3000/api/v1/users/login`)
-
-Update Your Info (`http://127.0.0.1:3000/api/v1/users/updateMyInfo`)
-
-### GET resuests
-
-Get all tours (`http://127.0.0.1:3000/api/v1/tours`)
-
-Get all users (`http://127.0.0.1:3000/api/v1/users`)
-
-to get Top-5 cheap tour (`http://127.0.0.1:3000/api/v1/tours/top5-cheap`)
-
-monthly plan in year 2021 (`http://127.0.0.1:3000/api/v1/tours/monthly-plan/2021`)
-
-filter the tours (`http://127.0.0.1:3000/api/v1/tours?duration[gt]=0&sort=price,-duration&fields=name,duration,price&page=3&limit=3`)
-
-### PATCH requests
-
-Reset password (`http://127.0.0.1:3000/api/v1/users/resetPassword/your-password-reset-token-here`)
-
-Update password (`http://127.0.0.1:3000/api/v1/users/updatePassword`)
-
-Update Profile (`http://127.0.0.1:3000/api/v1/users/updateMyInfo`)
-
-### Delete requests
-
-Delete a tour with their id (`http://127.0.0.1:3000/api/v1/tours/tour-id-goes-here`)
-
-Delete user's account (`http://127.0.0.1:3000/api/v1/users/deleteMyAccount`)
+API Documentation can be Found [here](https://documenter.getpostman.com/view/20551158/UzQuNQQY).Try to play around them.
 
 ## Acknowledgements
 
